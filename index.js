@@ -2,10 +2,9 @@ const { Storage } = require('@google-cloud/storage');
 const csvParser = require('csv-parser');
 const storage = new Storage();
 
-// Updated source bucket for the sample PDFs
 const sourceBucketName = 'iupui-cit41200-class-malpdf-pdf-source';
-const csvBucketName = 'cit41200-jaymmann-pdfmalware-sample'; // Bucket where the CSV is located
-const csvFileName = 'PDFMalware2022.csv'; // CSV file name
+const csvBucketName = 'cit41200-jaymmann-pdfmalware-sample';
+const csvFileName = 'PDFMalware2022.csv';
 
 async function getClassificationsFromCSV() {
   const classifications = {};
@@ -22,7 +21,7 @@ async function getClassificationsFromCSV() {
   });
 }
 
-let sortedCounter = 0; // Counter for the number of PDFs sorted
+let sortedCounter = 0; 
 
 async function checkAndMovePDF(filename, classification) {
   const exists = await storage.bucket(sourceBucketName).file(filename).exists();
@@ -31,7 +30,7 @@ async function checkAndMovePDF(filename, classification) {
     try {
       await storage.bucket(sourceBucketName).file(filename).copy(storage.bucket(destinationBucketName).file(filename));
       console.log(`Copied ${filename} to ${destinationBucketName}`);
-      sortedCounter++; // Increment the counter each time a file is successfully sorted
+      sortedCounter++; 
     } catch (error) {
       console.error(`Failed to move ${filename}:`, error.message);
     }
@@ -46,7 +45,6 @@ async function classifyAndMoveSamplePDFs() {
     for (const [filename, classification] of Object.entries(classifications)) {
       await checkAndMovePDF(filename, classification);
     }
-    // After all PDFs are processed, log the total number sorted
     console.log(`Total PDFs sorted: ${sortedCounter}`);
   } catch (error) {
     console.error('Failed to classify and move sample PDFs:', error);
